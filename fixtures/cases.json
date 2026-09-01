@@ -1,0 +1,111 @@
+{
+  "schema": "gooo/bootstrap-fixed-point/cases/v1",
+  "cases": [
+    {
+      "ordinal": 1,
+      "id": "normal-semantic-ir",
+      "class": "NORMAL",
+      "description": "the declared semantic IR is complete and canonical",
+      "declared_decision": "CLOSED",
+      "expected_decision": "CLOSED"
+    },
+    {
+      "ordinal": 2,
+      "id": "normal-generated-behavior",
+      "class": "NORMAL",
+      "description": "generated Go behavior is observed and matches the contract",
+      "declared_decision": "CLOSED",
+      "expected_decision": "CLOSED"
+    },
+    {
+      "ordinal": 3,
+      "id": "normal-provenance-graph",
+      "class": "NORMAL",
+      "description": "every generated claim has a source-to-output provenance path",
+      "declared_decision": "CLOSED",
+      "expected_decision": "CLOSED"
+    },
+    {
+      "ordinal": 4,
+      "id": "unknown-bootstrap-trust",
+      "class": "UNKNOWN",
+      "description": "the seed compiler is named but its bootstrap trust is not proven",
+      "declared_decision": "UNKNOWN",
+      "expected_decision": "UNKNOWN",
+      "unknown": {
+        "stage": "BOOTSTRAP",
+        "step": "VERIFY_BOOTSTRAP_COMPILER",
+        "reason": "seed compiler trust is declared UNPROVEN",
+        "unknown_class": "BOOTSTRAP_TRUST",
+        "next_operation": "PROVIDE_BOOTSTRAP_PROOF",
+        "blocked_by": ["bootstrap compiler seed-compiler"]
+      }
+    },
+    {
+      "ordinal": 5,
+      "id": "unknown-external-user",
+      "class": "UNKNOWN",
+      "description": "no external user evidence is supplied for utility",
+      "declared_decision": "UNKNOWN",
+      "expected_decision": "UNKNOWN",
+      "unknown": {
+        "stage": "UTILITY",
+        "step": "OBSERVE_EXTERNAL_USER_EVIDENCE",
+        "reason": "the repository has no external user observation",
+        "unknown_class": "MISSING_EXTERNAL_EVIDENCE",
+        "next_operation": "COLLECT_EXTERNAL_USER_EVIDENCE",
+        "blocked_by": ["external user fixture"]
+      }
+    },
+    {
+      "ordinal": 6,
+      "id": "unknown-toolchain",
+      "class": "UNKNOWN",
+      "description": "a toolchain observation is required before a claim can close",
+      "declared_decision": "UNKNOWN",
+      "expected_decision": "UNKNOWN",
+      "unknown": {
+        "stage": "EVIDENCE",
+        "step": "PIN_TOOLCHAIN_OBSERVATION",
+        "reason": "the requested toolchain observation is unavailable in this fixture",
+        "unknown_class": "MISSING_TOOLCHAIN_OBSERVATION",
+        "next_operation": "RUN_PINNED_TOOLCHAIN",
+        "blocked_by": ["toolchain observation"]
+      }
+    },
+    {
+      "ordinal": 7,
+      "id": "refuted-malformed",
+      "class": "REFUTED",
+      "description": "malformed input must fail closed instead of being guessed",
+      "declared_decision": "CLOSED",
+      "expected_decision": "REFUTED",
+      "malformed": true
+    },
+    {
+      "ordinal": 8,
+      "id": "refuted-unknown-decision",
+      "class": "REFUTED",
+      "description": "an unknown top-level decision cannot be promoted to CLOSED",
+      "declared_decision": "SIDEWAYS",
+      "expected_decision": "REFUTED"
+    },
+    {
+      "ordinal": 9,
+      "id": "refuted-precedence",
+      "class": "REFUTED",
+      "description": "a known contradiction dominates a simultaneous UNKNOWN",
+      "declared_decision": "UNKNOWN",
+      "expected_decision": "REFUTED",
+      "contradiction": true,
+      "unknown": {
+        "stage": "DECISION",
+        "step": "RESOLVE_PRECEDENCE",
+        "reason": "a contradiction was observed while an evidence field was unavailable",
+        "unknown_class": "MIXED_EVIDENCE",
+        "next_operation": "REPAIR_CONTRADICTION",
+        "blocked_by": ["contradictory evidence"]
+      }
+    }
+  ]
+}
