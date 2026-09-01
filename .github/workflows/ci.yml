@@ -1,0 +1,57 @@
+name: verify
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up pinned Go toolchain
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.27.x'
+          cache: true
+
+      - name: Compile, build, test, conformance, and integration
+        run: ./scripts/ci/run-ci.sh
+
+      - name: Attach CI provenance
+        env:
+          CI_ARTIFACT_NAME: gooo-bootstrap-report-${{ github.run_id }}
+          CI_MERGE_SHA: ${{ github.event_name == 'push' && github.sha || '' }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+        run: |
+          ./scripts/ci/finalize-report.sh \
+            "$GITHUB_WORKSPACE/ci-output/conformance/report.json" \
+            "$GITHUB_WORKSPACE/ci-output/ci-report.json" \
+            "$GITHUB_WORKSPACE/ci-output/stage-metrics.json"
+
+      - name: Upload immutable CI evidence
+        id: evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: gooo-bootstrap-report-${{ github.run_id }}
+          path: ci-output
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Publish evidence coordinates
+        env:
+          ARTIFACT_ID: ${{ steps.evidence.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.evidence.outputs.artifact-digest }}
+          ARTIFACT_URL: ${{ steps.evidence.outputs.artifact-url }}
+        run: |
+          {
+            echo "artifact_id=$ARTIFACT_ID"
+            echo "artifact_digest=$ARTIFACT_DIGEST"
+            echo "artifact_url=$ARTIFACT_URL"
+          } >> "$GITHUB_STEP_SUMMARY"

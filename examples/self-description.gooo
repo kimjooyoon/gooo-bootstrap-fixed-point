@@ -1,0 +1,31 @@
+# Gooo owns the semantic contract; Go is only the generator, evaluator, and runtime.
+language Gooo
+contract gooo-bootstrap-fixed-point/v1
+toolchain go1.27.0
+source_read_only true
+
+activity verifier.semantic_ir | canonical semantic IR is the verifier input
+activity verifier.provenance_graph | provenance graph binds source to generated behavior
+activity verifier.fixed_point | G1 and G2 are compared component by component
+activity generator.go | Go is emitted as a generated execution artifact
+activity evaluator.behavior | generated Go behavior is observed by the runner
+
+stage G0 | bootstrap seed semantics
+stage G1 | first semantic generation
+stage G2 | regeneration from the same pinned input
+
+precedence REFUTED>UNKNOWN>CLOSED
+unknown_fields stage,step,reason,unknown_class,next_operation,blocked_by
+proof canonical_semantic_ir,generated_go_behavior,generated_output,provenance_graph
+bootstrap compiler=seed-compiler
+bootstrap_trust UNPROVEN
+
+canonical_case normal-semantic-ir
+canonical_case normal-generated-behavior
+canonical_case normal-provenance-graph
+canonical_case unknown-bootstrap-trust
+canonical_case unknown-external-user
+canonical_case unknown-toolchain
+canonical_case refuted-malformed
+canonical_case refuted-unknown-decision
+canonical_case refuted-precedence
